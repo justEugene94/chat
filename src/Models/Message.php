@@ -66,7 +66,24 @@ class Message extends BaseModel
             'type' => $type,
         ]);
 
-        $this->raise(new MessageWasSent($message));
+        $broadcastEvents = config('musonza_chat.broadcast_events');
+
+        foreach ($broadcastEvents as $broadcastEvent => $broadcastType) {
+            if ($broadcastType === 'toConversation')
+            {
+                $this->raise(new $broadcastEvent($message));
+            }
+            elseif ($broadcastType === 'toUser')
+            {
+                foreach ($conversation->users as $user) {
+                    if ($user->id === $userId) {
+                        continue;
+                    }
+                    $this->raise(new $broadcastEvent($message, $user));
+                }
+            }
+
+        }
 
         return $message;
     }
