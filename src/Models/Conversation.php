@@ -262,11 +262,14 @@ class Conversation extends BaseModel
     {
         return $this->join('mc_conversation_user', 'mc_conversation_user.conversation_id', '=', 'mc_conversations.id')
             ->with([
+                'users',
+                'users.avatar',
                 'last_message' => function ($query) {
                     $query->join('mc_message_notification', 'mc_message_notification.message_id', '=', 'mc_messages.id')
                         ->select('mc_message_notification.*', 'mc_messages.*');
                 },
             ])->where('mc_conversation_user.user_id', $user->id)
+            ->doesntHave('last_message')
             ->orderBy('mc_conversations.updated_at', 'DESC')
             ->distinct('mc_conversations.id')
             ->paginate($perPage, ['mc_conversations.*'], $pageName, $page);
