@@ -269,7 +269,7 @@ class Conversation extends BaseModel
                         ->select('mc_message_notification.*', 'mc_messages.*');
                 },
             ])->where('mc_conversation_user.user_id', $user->id)
-            ->doesntHave('last_message')
+            ->has('last_message')
             ->orderBy('mc_conversations.updated_at', 'DESC')
             ->distinct('mc_conversations.id')
             ->paginate($perPage, ['mc_conversations.*'], $pageName, $page);
